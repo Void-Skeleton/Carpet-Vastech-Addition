@@ -170,7 +170,7 @@ public class CommandCluster extends CommandCarpetBase {
                         break;
                     }
                     case "makeClusterLoader": {
-                        int y = 64;
+                        int y = 150;
                         if (args.length >= 3) {
                             try {
                                 y = Integer.parseInt(args[2]);

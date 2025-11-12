@@ -46,7 +46,7 @@ public class CarpetSettings
     public static boolean locked = false;
 
     // TODO: replace these constants at build time
-    public static final String tagVersion = "v0.2.0";
+    public static final String tagVersion = "v0.2.1";
     public static final String carpetVersion = "Carpet Vastech Addition " + tagVersion;
 
     public static final String minecraftVersion = "1.12.2";
@@ -614,8 +614,9 @@ public class CarpetSettings
     @Rule(desc = "Enables chunk debug on carpet client.", category = CREATIVE, validator = "validateChunkDebugTool")
     public static boolean chunkDebugTool = false;
     private static boolean validateChunkDebugTool(boolean value) {
-        if (!value)
+        if (!value) {
             CarpetClientChunkLogger.logger.disable();
+        }
         return true;
     }
 

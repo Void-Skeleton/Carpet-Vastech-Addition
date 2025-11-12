@@ -5,6 +5,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
@@ -14,9 +15,9 @@ public final class JavaVersionUtil {
 
     static {
         JAVA_VERSION = getJavaVersion();
-        if (JAVA_VERSION >= 17) {
-            crackReflectionAccess();
-        }
+//        if (JAVA_VERSION >= 17) {
+//            crackReflectionAccess();
+//        }
     }
 
     private JavaVersionUtil() {}
@@ -53,17 +54,16 @@ public final class JavaVersionUtil {
         try {
             field.setAccessible(true);
         } catch (RuntimeException e) { // InaccessibleObjectException
-            if (JAVA_VERSION <= 8 || JAVA_VERSION >= 17) {
-                // For Java <= 8 we have natural unrestricted reflection
-                // For Java > 17 we have cracked reflective access
-                throw new AssertionError(e);
-            } else {
-                throw new RuntimeException("!!! You should add JVM args --illegal-access=permit", e);
-            }
-            /*
+//            if (JAVA_VERSION <= 8 || JAVA_VERSION >= 17) {
+//                // For Java <= 8 we have natural unrestricted reflection
+//                // For Java > 17 we have cracked reflective access
+//                throw new AssertionError(e);
+//            } else {
+//                throw new RuntimeException("!!! You should add JVM args --illegal-access=permit", e);
+//            }
+//
             long fieldOffset = UnsafeFieldAccessor.unsafe.objectFieldOffset(field);
             return new UnsafeFieldAccessor<>(ownerClass, fieldOffset);
-             */
         }
 
         try {
@@ -110,7 +110,6 @@ public final class JavaVersionUtil {
         }
     }
 
-    /*
     private static class UnsafeFieldAccessor<T> implements FieldAccessor<T> {
         private static final sun.misc.Unsafe unsafe = getUnsafe();
 
@@ -126,6 +125,11 @@ public final class JavaVersionUtil {
         @Override
         public T get(Object instance) {
             return (T) unsafe.getObject(ownerClass.cast(instance), fieldOffset);
+        }
+
+        @Override
+        public void set(Object instance, T value) {
+            unsafe.getAndSetObject(ownerClass.cast(instance), fieldOffset, value);
         }
 
         private static sun.misc.Unsafe getUnsafe() {
@@ -147,62 +151,68 @@ public final class JavaVersionUtil {
             }
         }
     }
-     */
-
-    private static void crackReflectionAccess() {
-        Object classLoader = JavaVersionUtil.class.getClassLoader();
-        Object unnamedModule = invokeQuietly(classLoader, "getUnnamedModule");
-        Method method;
-        try {
-            method = unnamedModule.getClass().getDeclaredMethod( "implAddExportsOrOpens", String.class,
-                    unnamedModule.getClass(), boolean.class, boolean.class );
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
-        method.setAccessible(true);
-        Object moduleLayerBoot = invokeStaticQuietly(classForName("java.lang.ModuleLayer"), "boot");
-        ((Iterable<?>) invokeQuietly(moduleLayerBoot, "modules")).forEach(module -> {
-            try {
-                Set<String> packages = (Set<String>) invokeQuietly(module, "getPackages");
-                for(String eachPackage : packages) {
-                    method.invoke( module, eachPackage, unnamedModule, true, true );
-                }
-            } catch (InvocationTargetException e) {
-                throw new RuntimeException( e );
-            } catch (IllegalAccessException e) {
-                System.err.println("!!! PLEASE ADD JVM ARGS --add-opens java.base/java.lang=ALL-UNNAMED");
-                throw new RuntimeException(e);
-            }
-        } );
-    }
-    
-    private static Object invokeQuietly(Object instance, String methodName, Object... params) {
-        try {
-            Method method = Arrays.stream(instance.getClass().getMethods()).filter(
-                    m -> methodName.equals(m.getName()) && m.getParameterCount() == params.length)
-                    .findFirst().orElseThrow(IllegalArgumentException::new);
-            return method.invoke(instance, params);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static Object invokeStaticQuietly(Class<?> clazz, String methodName, Object... params) {
-        try {
-            Method method = Arrays.stream(clazz.getMethods()).filter(
-                    m -> methodName.equals(m.getName()) && m.getParameterCount() == params.length)
-                    .findFirst().orElseThrow(IllegalArgumentException::new);
-            return method.invoke(null, params);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static Class<?> classForName(String className) {
-        try {
-            return Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//
+//    private static void crackReflectionAccess() {
+//        Object classLoader = JavaVersionUtil.class.getClassLoader();
+//        Object unnamedModule = invokeQuietly(classLoader, "getUnnamedModule");
+//        Method method;
+//        try {
+//            method = unnamedModule.getClass().getDeclaredMethod( "implAddExportsOrOpens", String.class,
+//                    unnamedModule.getClass(), boolean.class, boolean.class );
+//        } catch (NoSuchMethodException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        try {
+//            method.setAccessible(true);
+//        } catch (RuntimeException e) {
+//            System.err.println("!!! PLEASE ADD JVM ARGS --add-opens java.base/java.lang=ALL-UNNAMED");
+//            throw e;
+//        }
+//
+//        Object moduleLayerBoot = invokeStaticQuietly(classForName("java.lang.ModuleLayer"), "boot");
+//        ((Iterable<?>) invokeQuietly(moduleLayerBoot, "modules")).forEach(module -> {
+//            try {
+//                Set<String> packages = (Set<String>) invokeQuietly(module, "getPackages");
+//                for(String eachPackage : packages) {
+//                    method.invoke( module, eachPackage, unnamedModule, true, true );
+//                }
+//            } catch (InvocationTargetException e) {
+//                throw new RuntimeException( e );
+//            } catch (IllegalAccessException e) {
+//                System.err.println("!!! PLEASE ADD JVM ARGS --add-opens java.base/java.lang=ALL-UNNAMED");
+//                throw new RuntimeException(e);
+//            }
+//        } );
+//    }
+//
+//    private static Object invokeQuietly(Object instance, String methodName, Object... params) {
+//        try {
+//            Method method = Arrays.stream(instance.getClass().getMethods()).filter(
+//                    m -> methodName.equals(m.getName()) && m.getParameterCount() == params.length)
+//                    .findFirst().orElseThrow(IllegalArgumentException::new);
+//            return method.invoke(instance, params);
+//        } catch (IllegalAccessException | InvocationTargetException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
+//    private static Object invokeStaticQuietly(Class<?> clazz, String methodName, Object... params) {
+//        try {
+//            Method method = Arrays.stream(clazz.getMethods()).filter(
+//                    m -> methodName.equals(m.getName()) && m.getParameterCount() == params.length)
+//                    .findFirst().orElseThrow(IllegalArgumentException::new);
+//            return method.invoke(null, params);
+//        } catch (IllegalAccessException | InvocationTargetException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
+//    private static Class<?> classForName(String className) {
+//        try {
+//            return Class.forName(className);
+//        } catch (ClassNotFoundException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 }

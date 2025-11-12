@@ -304,12 +304,13 @@ public class CarpetClientChunkLogger {
         private final Map<EntityPlayerMP, HashSet<InternedString>> sentTracesForPlayer = new WeakHashMap<>();
 
         public void registerPlayer(EntityPlayerMP sender, PacketBuffer data) {
-            if (!enabled) {
+            if (!CarpetSettings.chunkDebugTool) {
                 CarpetClientMessageHandler.sendNBTChunkData(sender, PACKET_ACCESS_DENIED, new NBTTagCompound());
                 return;
             }
             boolean addPlayer = data.readBoolean();
             if (addPlayer) {
+                enabled = true;
                 this.sentTracesForPlayer.put(sender, new HashSet<>());
                 this.sendInitalChunks(sender);
             } else {

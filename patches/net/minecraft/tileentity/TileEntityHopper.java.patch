@@ -95,8 +95,8 @@
  
      private boolean func_145883_k()
      {
-+        String prevReason = CarpetClientChunkLogger.reason;
-+        CarpetClientChunkLogger.reason = "Hopper loading";
++        String prevReason = CarpetClientChunkLogger.reason.get();
++        CarpetClientChunkLogger.reason.set("Hopper loading");
 +        /* carpet mod */
 +        if (CarpetSettings.hopperCounters != CarpetSettings.HopperCounters.off)
 +        {
@@ -126,7 +126,7 @@
 +
          IInventory iinventory = this.func_145895_l();
  
-+        CarpetClientChunkLogger.reason = prevReason;
++        CarpetClientChunkLogger.reason.set(prevReason);
 +
          if (iinventory == null)
          {
@@ -164,10 +164,10 @@
  
      public static boolean func_145891_a(IHopper p_145891_0_)
      {
-+        String prevReason = CarpetClientChunkLogger.reason;
-+        CarpetClientChunkLogger.reason = "Hopper self-loading";
++        String prevReason = CarpetClientChunkLogger.reason.get();
++        CarpetClientChunkLogger.reason.set("Hopper self-loading");
          IInventory iinventory = func_145884_b(p_145891_0_);
-+        CarpetClientChunkLogger.reason = prevReason;
++        CarpetClientChunkLogger.reason.set(prevReason);
  
          if (iinventory != null)
          {

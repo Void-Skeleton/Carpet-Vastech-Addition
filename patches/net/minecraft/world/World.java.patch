@@ -126,10 +126,10 @@
 +    //CM chunk load reason
 +    public boolean setBlockState(BlockPos pos, IBlockState newState, int flags, String reason)
 +    {
-+        String prevReason = CarpetClientChunkLogger.reason;
-+        CarpetClientChunkLogger.reason = reason;
++        String prevReason = CarpetClientChunkLogger.reason.get();
++        CarpetClientChunkLogger.reason.set(reason);
 +        boolean successful = func_180501_a(pos, newState, flags);
-+        CarpetClientChunkLogger.reason = prevReason;
++        CarpetClientChunkLogger.reason.set(prevReason);
 +        return successful;
 +    }
 +

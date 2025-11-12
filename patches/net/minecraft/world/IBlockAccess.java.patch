@@ -14,10 +14,10 @@
 +    //CM chunk load reason
 +    default IBlockState getBlockState(BlockPos pos, String reason)
 +    {
-+        String prevReason = CarpetClientChunkLogger.reason;
-+        CarpetClientChunkLogger.reason = reason;
++        String prevReason = CarpetClientChunkLogger.reason.get();
++        CarpetClientChunkLogger.reason.set(reason);
 +        IBlockState prev = func_180495_p(pos);
-+        CarpetClientChunkLogger.reason = prevReason;
++        CarpetClientChunkLogger.reason.set(prevReason);
 +        return prev;
 +    }
 +

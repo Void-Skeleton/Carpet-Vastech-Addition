@@ -614,8 +614,9 @@ public class CarpetSettings
     @Rule(desc = "Enables chunk debug on carpet client.", category = CREATIVE, validator = "validateChunkDebugTool")
     public static boolean chunkDebugTool = false;
     private static boolean validateChunkDebugTool(boolean value) {
-        if (!value)
+        if (!value) {
             CarpetClientChunkLogger.logger.disable();
+        }
         return true;
     }
 

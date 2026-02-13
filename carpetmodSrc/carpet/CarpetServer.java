@@ -107,6 +107,9 @@ public class CarpetServer // static for now - easier to handle all around the co
                 throw new UncheckedIOException(e);
             }
 
+            // VasCM - Patch instantScheduling config bug
+            world.scheduledUpdatesAreImmediate = CarpetSettings.instantScheduling;
+
             String prefix = "minecraft." + world.provider.getDimensionType().getName();
             new PubSubInfoProvider<>(PUBSUB,prefix + ".chunk_loading.dropped_chunks.hash_size",20,
                     () -> UnloadOrder.getCurrentHashSize(world));

@@ -1,5 +1,6 @@
 package carpet.commands;
 
+import carpet.CarpetSettings;
 import carpet.commands.CommandCarpetBase;
 import carpet.logging.LoggerRegistry;
 import carpet.utils.JavaVersionUtil;
@@ -12,9 +13,14 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -98,5 +104,18 @@ public class CommandEntityTask extends CommandCarpetBase {
                 } catch (Throwable ignore) {}
             }
         }
+    }
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
+    {
+        if (!CarpetSettings.commandEntityTask)
+        {
+            notifyCommandListener(sender, this, "Command is disabled in carpet settings");
+        }
+        List<String> list = getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
+        RayTraceResult result = ((EntityPlayerMP)sender).actionPack.mouseOver();
+        if(result != null && result.typeOfHit == RayTraceResult.Type.ENTITY){
+            list.add(result.entityHit.getUniqueID().toString());
+        }
+        return args.length == 1 ? list : Collections.emptyList();
     }
 }

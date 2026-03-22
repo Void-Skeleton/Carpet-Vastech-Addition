@@ -4,6 +4,7 @@ import carpet.CarpetSettings;
 import com.google.common.base.Charsets;
 import com.google.gson.*;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.server.MinecraftServer;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -11,8 +12,11 @@ import org.apache.logging.log4j.LogManager;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class LoggerRegistry
 {
@@ -52,6 +56,9 @@ public class LoggerRegistry
     public static boolean __population;
     public static boolean __entityTask;
 
+    // Vas-CM: Palette logger
+    public static boolean __palette;
+
     public static void initLoggers(MinecraftServer server)
     {
         registerLogger("tnt", new Logger(server, "tnt", "brief", new String[]{"brief", "full"}, LogHandler.CHAT));
@@ -83,6 +90,9 @@ public class LoggerRegistry
 
         registerGeneric("carefulBreak", new Logger(server, "carefulBreak", null, null, LogHandler.CHAT));
         registerGeneric("normalCameraVision", new Logger(server, "normalCameraVision", null, null, LogHandler.CHAT));
+
+        // Vas-CM: Palette logger
+        registerLogger("palette", new Logger(server, "palette", null, new String[]{"all", "add", "upsize"}, LogHandler.CHAT));
     }
 
     private static File getSaveFile(MinecraftServer server) { return server.getActiveAnvilConverter().getFile(server.getFolderName(), "loggerData.json"); }

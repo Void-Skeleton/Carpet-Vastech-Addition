@@ -1,0 +1,11 @@
+--- ../src-base/minecraft/net/minecraft/world/chunk/IBlockStatePaletteResizer.java
++++ ../src-work/minecraft/net/minecraft/world/chunk/IBlockStatePaletteResizer.java
+@@ -5,4 +5,8 @@
+ interface IBlockStatePaletteResizer
+ {
+     int func_186008_a(int p_186008_1_, IBlockState p_186008_2_);
++
++//    // Vas-CM: Palette logger
++//    void onAddition(int bits, IBlockState state);
++
+ }

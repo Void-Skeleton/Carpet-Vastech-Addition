@@ -2,6 +2,7 @@ package carpet.commands;
 
 import carpet.CarpetServer;
 import carpet.CarpetSettings;
+import dev.glaeos.woven.command.WovenCommands;
 import narcolepticfrog.rsmm.MeterCommand;
 import net.minecraft.command.CommandHandler;
 import redstone.multimeter.command.MeterGroupCommand;
@@ -64,5 +65,9 @@ public class CarpetCommands {
         // ----- RSMM End ----- //
 
         handler.registerCommand(new MeterGroupCommand(CarpetServer.rsmmServer));
+
+        // -- Woven --
+        WovenCommands.register(handler);
+        // -- Woven --
     }
 }

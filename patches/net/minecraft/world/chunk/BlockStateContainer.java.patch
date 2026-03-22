@@ -1,6 +1,36 @@
 --- ../src-base/minecraft/net/minecraft/world/chunk/BlockStateContainer.java
 +++ ../src-work/minecraft/net/minecraft/world/chunk/BlockStateContainer.java
-@@ -146,4 +146,14 @@
+@@ -1,6 +1,9 @@
+ package net.minecraft.world.chunk;
+ 
+ import javax.annotation.Nullable;
++
++import carpet.logging.Logger;
++import carpet.logging.LoggerRegistry;
+ import net.minecraft.block.Block;
+ import net.minecraft.block.state.IBlockState;
+ import net.minecraft.init.Blocks;
+@@ -28,8 +31,17 @@
+ 
+     private void func_186012_b(int p_186012_1_)
+     {
+-        if (p_186012_1_ != this.field_186024_e)
+-        {
++        if (p_186012_1_ != this.field_186024_e) {
++
++            // Vas-CM: Palette logger
++            if (LoggerRegistry.__palette) {
++                String originalImpl = (field_186024_e <= 4) ? "linear" : ((field_186024_e <= 8) ? "hash map" : "registry");
++                String newImpl = (p_186012_1_ <= 4) ? "linear" : ((p_186012_1_ <= 8) ? "hash map" : "registry");
++                if (!originalImpl.equals(newImpl)) {
++
++                }
++            }
++
+             this.field_186024_e = p_186012_1_;
+ 
+             if (this.field_186024_e <= 4)
+@@ -146,4 +158,14 @@
      {
          return 1 + this.field_186022_c.func_186040_a() + PacketBuffer.func_150790_a(this.field_186021_b.func_188144_b()) + this.field_186021_b.func_188143_a().length * 8;
      }
